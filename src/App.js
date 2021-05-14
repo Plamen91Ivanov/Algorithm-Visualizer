@@ -1,34 +1,13 @@
-import logo from './logo.svg';
+import React from 'react';
+import SortingVisualizer from './SortingVisualizer/SortingVisualizer';
 import './App.css';
 
-import SearchAlgorithm from './components/SearchAlgorithm/SearchAlgorithm';
-import Pathfinding from './components/Pathfinding/Pathfinding';
-import Snake from './components/SnakeBot/Snake';
-
 function App() {
-  // return (
-  //   <div className="App">
-  //     <SearchAlgorithm></SearchAlgorithm>
-  //     <Pathfinding></Pathfinding>
-  //     <Snake></Snake>
-  //     <div className="card-container"></div>
-  //   </div>
-  // );
-  const [state, setState] = useState('start')
-
-  triggerAddTripState = () => {
-    setState('add-trip')
-  }
-
   return (
-    <div>
-      {state === 'start' && (
-        <AddTripButton addTrip={this.triggerAddTripState} />
-      )}
-
-      {state === 'add-trip' && <AnotherComponent />}
+    <div className="App">
+      <SortingVisualizer></SortingVisualizer>
     </div>
-  )
+  );
 }
 
 export default App;
