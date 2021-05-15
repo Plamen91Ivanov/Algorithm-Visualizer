@@ -1,6 +1,6 @@
 import React from 'react';
-import {getMergeSortAnimations} from '../sortingAlgorithms/sortingAlgorithms.js';
-import {getBubleSortAnimation} from '../sortingAlgorithms/sortingAlgorithms.js';
+import {getMergeSortAnimations} from './SortingAlgorithms';
+import {getBubleSortAnimation} from './SortingAlgorithms';
 import './SortingVisualizer.css';
 
 const times = 0;
@@ -144,7 +144,15 @@ export default class SortingVisualizer extends React.Component {
     const {array} = this.state;
 
     return (
-      <div className="array-container">
+      <div className="board-container">
+        <div className="algo-btn">
+        <button className="glow-on-hover sm-btn" onClick={() => this.resetArray()}>Generate New Array</button>
+        <button className="glow-on-hover sm-btn" onClick={() => this.mergeSort()}>Merge Sort</button>
+        <button className="glow-on-hover sm-btn" onClick={() => this.quickSort()}>Quick Sort</button>
+        <button className="glow-on-hover sm-btn" onClick={() => this.heapSort()}>Heap Sort</button>
+        <button className="glow-on-hover sm-btn" onClick={() => this.bubbleSort()}>Bubble Sort</button>
+        </div>
+        <div className="board">
         {array.map((value, idx) => (
           <div
             className="array-bar"
@@ -154,11 +162,7 @@ export default class SortingVisualizer extends React.Component {
               height: `${10*value}px`,
             }}></div>
         ))}
-        <button onClick={() => this.resetArray()}>Generate New Array</button>
-        <button onClick={() => this.mergeSort()}>Merge Sort</button>
-        <button onClick={() => this.quickSort()}>Quick Sort</button>
-        <button onClick={() => this.heapSort()}>Heap Sort</button>
-        <button onClick={() => this.bubbleSort()}>Bubble Sort</button>
+        </div>
       </div>
     );
   }

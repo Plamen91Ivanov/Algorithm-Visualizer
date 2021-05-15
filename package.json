@@ -1,6 +1,6 @@
 {
-  "homepage": "http://plamen91ivanov.github.io/myapp2",
-  "name": "myapp2",
+  "homepage": "http://plamen91ivanov.github.io/Algorithm-Visualizer",
+  "name": "Algorithm-Visualizer",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
