@@ -4,7 +4,7 @@ const Navbar = () => {
     return (
         <nav className='navbar'>
             <div className='topnav-centered'>
-            <Link to='/'>
+            <Link to='/Algo-visualizer'>
                 <button className="glow-on-hover sm-btn">
                   Home
                 </button>
