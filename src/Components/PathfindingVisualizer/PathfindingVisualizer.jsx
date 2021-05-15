@@ -130,19 +130,22 @@ export default class PathfindingVisualizer extends Component {
 
     return (
       <>
-        <button onClick={() => this.visualizeDijkstra()}>
-          Visualize Dijkstra's Algorithm
+      <div className='algo-btn'>
+        <button className="glow-on-hover sm-btn" onClick={() => this.visualizeDijkstra()}>
+          Dijkstra's
         </button>
-        <button onClick={() => this.visualizeDFS()}>
-          Visualize DSF's Algorithm
+        <button className="glow-on-hover sm-btn" onClick={() => this.visualizeDFS()}>
+          DSF's
         </button>
-        <button onClick={() => this.AStar()}>
-          Visualize AStar Algorithm
+        <button className="glow-on-hover sm-btn" onClick={() => this.AStar()}>
+          AStar
         </button>
-        <button onClick={() => this.clearBoard()}>
+        <button className="glow-on-hover sm-btn" onClick={() => this.clearBoard()}>
          Clear Board
         </button>
-        <div className="grid">
+      </div>
+
+        <div className="grid board">
           {grid.map((row, rowIdx) => {
             return (
               <div key={rowIdx}>
