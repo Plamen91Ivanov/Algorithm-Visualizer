@@ -100,7 +100,6 @@ export default class PathfindingVisualizer extends Component {
         const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
         const visitedNodes = AStar(grid,startNode,finishNode);
         console.log(visitedNodes);
-        console.log('ho');
       }
 
   clearBoard(){
@@ -137,7 +136,7 @@ export default class PathfindingVisualizer extends Component {
         <button className="glow-on-hover sm-btn" onClick={() => this.visualizeDFS()}>
           DSF's
         </button>
-        <button className="glow-on-hover sm-btn" onClick={() => this.AStar()}>
+        <button className="glow-on-hover sm-btn" onClick={() => this.visualizeAStar()}>
           AStar
         </button>
         <button className="glow-on-hover sm-btn" onClick={() => this.clearBoard()}>

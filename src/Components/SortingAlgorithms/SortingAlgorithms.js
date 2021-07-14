@@ -12,29 +12,44 @@ export function getBubleSortAnimation(array,times) {
   times = t;
   return {animations,times};
 }
-function bubleSort(a,animations,times)
+
+export function getSelectionSortAnimation(array,times) {
+  const animations = [];
+  var t = selectionSort(array,animations,times);
+  times = t;
+  return {animations,times};
+}
+
+export function getInsertionSortAnimation(array,times) {
+  const animations = [];
+  var t = insertionSort(array,animations,times);
+  times = t;
+  return {animations,times};
+}
+
+function bubleSort(array,animations,times)
 {
-    var swap = true;
-    var n = a.length-1;
-    var x=a;
+    var isSorted = true;
+    var elementsNumber = array.length-1;
+    var x = array;
     do{
-        swap = false;
-        for (let i = 0; i < n; i++) {
+      isSorted = false;
+        for (let i = 0; i < elementsNumber; i++) {
             if (x[i] > x[i+1])
             {
               animations.push([i]);
                var temp = x[i];
                x[i] = x[i+1];
                x[i+1] = temp;
-               swap = true;
+               isSorted = true;
             }
     }
     times++;
-    n--;
-    if (!swap) {
+    elementsNumber--;
+    if (!isSorted) {
       return times;
     }
-    }while(swap);
+    }while(isSorted);
 }
 
 function mergeSortHelper(
@@ -105,4 +120,37 @@ function doMerge(
     animations.push([k, auxiliaryArray[j]]);
     mainArray[k++] = auxiliaryArray[j++];
   }
+}
+
+function insertionSort(array,animations){
+    let x = array;
+    let length = array.length;
+    for (let i = 1; i < length; i++) {
+      let key = array[i];
+      let j = i - 1;
+      while (j >= 0 && array[j] > key) {
+        array[j + 1] = array[j];
+          animations.push(j);
+          j = j - 1;
+      }
+      array[j + 1] = key;
+  }
+    return {animations};
+}
+
+function selectionSort(array, compare, swap) {
+  for (var i = 0; i < array.length - 1; i++) {
+    var minIndex = i;
+
+    for (var j = i + 1; j < array.length; j++) {
+      if (compare(array, j, minIndex) < 0) {
+        minIndex = j;
+      }
+    }
+
+    if (minIndex !== i) {
+      swap(array, i, minIndex);
+    }
+  }
+  return array;
 }

@@ -15,7 +15,6 @@ function App() {
           <Switch>
             <Route exact path='/algo-visualizer'>
                 <Home/>
-                <Home/>
             </Route>
             <Route path='/sorting'>
                 <SortingVisualizer/>
