@@ -25,10 +25,51 @@ body {
 .algo-btn{
   text-align: center;
 }
+
 .board{
   text-align: center;
   width: 100%;
   height: 100vh;
+}
+
+.algorithm-button-disabled{
+  width: 220px;
+  height: 50px;
+  border: none;
+  outline: none;
+  color: #fff;
+  background: darkslategray !important;
+  cursor: pointer;
+  position: relative;
+  z-index: 0;
+  border-radius: 10px;
+}
+
+.disabled{
+  width: 220px;
+  height: 50px;
+  border: none;
+  outline: none;
+  color: #fff;
+  background: darkslategray !important;
+  cursor: pointer;
+  position: relative;
+  z-index: 0;
+  border-radius: 10px;
+}
+
+
+.resetBtn{
+  width: 220px;
+  height: 50px;
+  border: none;
+  outline: none;
+  color: #fff;
+  background: crimson;
+  cursor: pointer;
+  position: relative;
+  z-index: 0;
+  border-radius: 10px;
 }
  
 .glow-on-hover {
@@ -48,6 +89,10 @@ body {
   width: 100px;
   height: 30px;
   margin:5px;
+}
+
+#resetBtn{
+  text-align: center;
 }
 
 .glow-on-hover:before {

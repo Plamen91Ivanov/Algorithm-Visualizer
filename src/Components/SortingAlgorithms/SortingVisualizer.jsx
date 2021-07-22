@@ -2,6 +2,8 @@ import React from 'react';
 import {getMergeSortAnimations} from './SortingAlgorithms';
 import {getBubleSortAnimation} from './SortingAlgorithms';
 import {getInsertionSortAnimation} from './SortingAlgorithms';
+import {getQuickSortAnimation} from './SortingAlgorithms';
+
 import './SortingVisualizer.css';
 
 const times = 0;
@@ -16,7 +18,6 @@ const PRIMARY_COLOR = 'turquoise';
 
 // This is the color of array bars that are being compared throughout the animations.
 const SECONDARY_COLOR = 'red';
-var testt = 2000;
 
 export default class SortingVisualizer extends React.Component {
   constructor(props) {
@@ -24,23 +25,93 @@ export default class SortingVisualizer extends React.Component {
 
     this.state = {
       array: [],
+      value: 30,
+      speedValue: 125,
+      stop:false,
+      sorted:false
     };
   }
-
   componentDidMount() {
     this.resetArray();
   }
 
-  resetArray() {
+  handleChange = (e) =>{
     const array = [];
-    for (let i = 0; i < NUMBER_OF_ARRAY_BARS; i++) {
-      array.push(randomIntFromInterval(5, 50));
+    for (let i = 0; i < e.target.value; i++) {
+      array.push(randomIntFromInterval(5, 40));
     }
     this.setState({array});
+    this.setState({value: e.target.value})
+  };
+
+  handleSpeedValueChange = (e) =>{
+    this.setState({speedValue: e.target.value}) 
+  };
+
+  resetArray() {
+    const array = [];
+    for (let i = 0; i < this.state.value; i++) {
+      array.push(randomIntFromInterval(5, 40));
+    }
+    for (let i = 0; i < this.state.array.length; i++) {
+      const arrayBars = document.getElementsByClassName('array-bar');
+      arrayBars[i].style.backgroundColor = 'turquoise';
+ }
+ this.setState({array});
+  }
+
+  disableAllButtons(){
+    document.getElementById('changeArrLength').disabled = true;
+    document.getElementById('changeAnimationSpeed').disabled = true;
+    const buttons = document.getElementsByClassName('sm-btn')
+     for (let index = 0; index < buttons.length; index++) {
+        buttons[index].disabled = true;
+        buttons[index].className = "sm-btn disabled";
+     }
+  }
+  disableAlgorithmButtons(){
+    const algoButtons = document.getElementsByClassName('sm-btn');
+    console.log(algoButtons)
+    for (let index = 0; index < algoButtons.length; index++) {
+        algoButtons[index].disabled = true;
+        algoButtons[index].clasName = 'sm-btn algorithm-button-disabled';
+        console.log('tik');
+    }
+  }
+  
+  enableAllButtons(){
+    document.getElementById('changeArrLength').disabled = false;
+    document.getElementById('changeAnimationSpeed').disabled = false;
+    const buttons = document.getElementsByClassName('sm-btn')
+    for (let index = 0; index < buttons.length; index++) {
+      buttons[index].disabled = false;
+      buttons[index].className = "glow-on-hover sm-btn";
+    }
+  }
+
+  addResetButton(){
+    let btn = document.createElement('button');
+    btn.onclick = () => {
+      this.stop()
+    };
+    btn.className = "sm-btn resetBtn";
+    btn.innerHTML = "RESET"
+    document.getElementById('resetBtn').appendChild(btn);
+  }
+
+  removeResetButton(){
+    const buttons = document.getElementsByClassName('glow-on-hover');
+    buttons[buttons.length - 1].remove();
+  }
+
+  stop(){
+     window.location.reload();
   }
 
   mergeSort() {
     const animations = getMergeSortAnimations(this.state.array);
+    this.disableAllButtons();
+    this.addResetButton();
     for (let i = 0; i < animations.length; i++) {
       const arrayBars = document.getElementsByClassName('array-bar');
       const isColorChange = i % 3 !== 2;
@@ -52,25 +123,29 @@ export default class SortingVisualizer extends React.Component {
         setTimeout(() => {
           barOneStyle.backgroundColor = color;
           barTwoStyle.backgroundColor = color;
-        }, i * ANIMATION_SPEED_MS);
+        }, i * this.state.speedValue);
       } else {
         setTimeout(() => {
           const [barOneIdx, newHeight] = animations[i];
           const barOneStyle = arrayBars[barOneIdx].style;
           const bigHeight = 10 * newHeight;
           barOneStyle.height = `${bigHeight}px`;
-        }, i * ANIMATION_SPEED_MS);
+          if (i == animations.length - 1) {
+            this.enableAllButtons();
+            this.removeResetButton();
+          }
+        }, i * this.state.speedValue);
       }
     }
   }
   bubbleSort() {
     const result = getBubleSortAnimation(this.state.array,times);
     const animations = result.animations;
-
+    this.disableAllButtons();
+    this.addResetButton();
     var time = result.times;
     var arrayL = ((this.state.array.length - 1) * 3);
     var totalAnimationSteps = arrayL * time;
-    
     var arrAnimation = [];
     var num = 0;
     for (let t = 0; t < arrayL; t++) {
@@ -83,10 +158,12 @@ export default class SortingVisualizer extends React.Component {
         num++;
       }
     }
+
      var x = 0;
      var t = 0;
      var z = 0;
      var fix = 0;
+     console.log(arrAnimation);
       for (let i = 0; i < totalAnimationSteps; i++) {
         const arrayBars = document.getElementsByClassName('array-bar');
         const isColorChange = i % 3 !== 2;
@@ -99,7 +176,7 @@ export default class SortingVisualizer extends React.Component {
             barOneStyle.backgroundColor = color;
             barTwoStyle.backgroundColor = color;
             z++;
-          }, i * ANIMATION_SPEED_MS);
+          }, i * this.state.speedValue);
         }
         else {
           setTimeout(() => {
@@ -109,57 +186,43 @@ export default class SortingVisualizer extends React.Component {
             const [barOneIdx,barTwoIdx] = arrAnimation[z];
             const barOneStyle = arrayBars[barOneIdx].style;
             const barTwoStyle = arrayBars[barTwoIdx].style;
-
             const tmp = barOneStyle.height;
             barOneStyle.height = `${barTwoStyle.height}`;
             barTwoStyle.height = `${tmp}`;
             }
             if ((i - fix) % (arrayL - 1) === 0) {
               z = -1;
+              x = -1;
               time--;
               fix++;
             }
             z++;
             x++;
-        }, i * ANIMATION_SPEED_MS);
-      }
-  }
-}
+            if (i == totalAnimationSteps - 1) {
+              this.enableAllButtons();
+              this.removeResetButton();
+            }
+         }, i * this.state.speedValue);
+        }
 
-changeColor(i,x,z,arrAnimation){
-  
-}
-insertionSort() {
+     }
+  } 
+  insertionSort() {
+    let animations = [];
     const result = getInsertionSortAnimation(this.state.array,times);
-    const animations = result.animations;
-
-    // var arrAnimation = [];
-    // var num = 0;
-    // for (let t = 0; t < 30; t++) {
-    //   var test = t % 3 !== 2;
-    //   if (test) {
-    //     arrAnimation.push([num,num+1]);
-    //   }
-    //   else{
-    //     arrAnimation.push([num,num+1]);
-    //     num++;
-    //   }
-    // }
+    animations = result.animations; 
     let z = 0;
     let x = 0;
-    var current = 0; 
-    var count = 0;
-    var forc = 0;
-    var testcount = 5;
-    for (let i = 0; i < animations.length - 1; i++) {
-      setTimeout(()=> { 
+    this.disableAllButtons();
+    this.addResetButton();
+    for (let i = 0; i < animations.length; i++) {
+      setTimeout(() => {
         const arrayBars = document.getElementsByClassName('array-bar');
           for (let y = 0; y < 3; y++) {
-            setTimeout(()=>{
-                const isColorChange = y % 3 !== 2;
-              //const [barOneIdx,barTwoIdx] = arrAnimation[z];
-              const barOne = arrayBars[i].style;
-              const barTwo = arrayBars[i + 1].style;
+              setTimeout(()=>{
+              const isColorChange = y % 3 !== 2;
+              const barOne = arrayBars[animations[i][0][0]].style;
+              const barTwo = arrayBars[animations[i][0][1]].style;
               if (isColorChange) {
                 const color = (z - x) % 2 !== 0 ? PRIMARY_COLOR : SECONDARY_COLOR; 
                 barOne.backgroundColor = color;
@@ -167,185 +230,112 @@ insertionSort() {
                 z++;
               }
               else{
+                if (animations[i][1] == true) {
+                  const barOneStyle = arrayBars[animations[i][0][0]].style;
+                  const barTwoStyle = arrayBars[animations[i][0][1]].style;
+                  const tmp = barOneStyle.height;
+                  barOneStyle.height = `${barTwoStyle.height}`;
+                  barTwoStyle.height = `${tmp}`;
+                } 
+                 z++;
+                 x++; 
+            }
+        if (i == (animations.length - 1) && y == 2) {
+          this.enableAllButtons();
+          this.removeResetButton();
+          this.state.sorted = true;
+          this.disableAlgorithmButtons();
+          console.log("tuk")
+          }
+            },y * this.state.speedValue);
+        }
+      },i * (this.state.speedValue * 3))
+    }
+  }
+  quickSort() {
+  const animations = getQuickSortAnimation(this.state.array);
+  this.disableAllButtons();
+  this.addResetButton();
+    let z = 0;
+    let x = 0;
+    for (let i = 0; i < animations.length; i++) {
+      setTimeout(()=> {
+        for (let index = animations[i][2][0]; index < animations[i][2][1]; index++) {
+          const arrayBars = document.getElementsByClassName('array-bar');
+          arrayBars[index].style.backgroundColor = 'yellow';
+        }
+        const arrayBars = document.getElementsByClassName('array-bar');
+          for (let y = 0; y < 3; y++) {
+            setTimeout(()=>{
+              const isColorChange = y % 3 !== 2;
+              const barOne = arrayBars[animations[i][0][0]].style;
+              if (animations[i][1] == false) {
+                const barTwo = arrayBars[animations[i][0][1]].style;
+                barTwo.backgroundColor = 'green'
+              }
+              if (isColorChange) {
+                const color = (z - x) % 2 !== 0 ? PRIMARY_COLOR : SECONDARY_COLOR; 
+                barOne.backgroundColor = color;
+                z++;
+              }
+              else{
+                if (animations[i][1] == true) {
+                  const barOneStyle = arrayBars[animations[i][0][0]].style;
+                  const barTwoStyle = arrayBars[animations[i][0][1]].style;
+                  const tmp = barOneStyle.height;
+                  barOneStyle.height = `${barTwoStyle.height}`;
+                  barTwoStyle.height = `${tmp}`;
+                }
                  z++;
                  x++; 
             }  
-            },y * 1000);
+            var test = animations.length - 1
+        if (i == test && y == 2) {
+          this.enableAllButtons();
+          this.removeResetButton();
         }
-
-        if (i == 5) {
-          while(testcount != 0)
-          console.log(testcount);
-          for (let z = 0; z < 2; z++) {
-            const isColorChange = y % 3 !== 2;
-          //const [barOneIdx,barTwoIdx] = arrAnimation[z];
-          const barOne = arrayBars[testcount].style;
-          const barTwo = arrayBars[testcount - 1].style;
-          if (isColorChange) {
-            const color = (z - x) % 2 !== 0 ? PRIMARY_COLOR : SECONDARY_COLOR; 
-            barOne.backgroundColor = color;
-            barTwo.backgroundColor = color;
-            z++;
-          }
-          else{
-             z++;
-             x++; 
-        } 
-          }
-        testcount--;
+            },y * this.state.speedValue);
         }
-      },i* 3000)
+      },i* (this.state.speedValue * 3))
     }
-  //     setTimeout(() => {
-  //     for (let y = 0; y < 2; y++) {
-  //     const arrayBars = document.getElementsByClassName('array-bar');
-  //     const isColorChange = i % 3 !== 2;
-  //     if (isColorChange) {
-  //       setTimeout(() => {
-  //           current = i;
-  //           const barOneStyle = arrayBars[current].style;
-  //             const barTwoStyle = arrayBars[current + 1].style;
-  //           const color = (z - x) % 2 !== 0 ? PRIMARY_COLOR : SECONDARY_COLOR;
-  //           barOneStyle.backgroundColor = color;
-  //           barTwoStyle.backgroundColor = color;
-  //           z++;
-  //         }
-  //       }, y * ANIMATION_SPEED_MS);
-  //     }
-  //     else {
-  //       setTimeout(() => { 
-  //         current = i ;
-  //         if (i == animations[count]) {
-  //          // t++;
-  //         //swap
-  //         const barOneStyle = arrayBars[current].style;
-  //         const barTwoStyle = arrayBars[current+1].style;
-  //         const tmp = barOneStyle.height;
-  //         barOneStyle.height = `${barTwoStyle.height}`;
-  //         barTwoStyle.height = `${tmp}`;
-
-  //         while(animations[count] > animations[count + 1]){
-  //           current--;
-  //           //swap
-  //           const barOneStyle = arrayBars[current].style;
-  //           const barTwoStyle = arrayBars[current+1].style;
-  //           const tmp = barOneStyle.height;
-  //           barOneStyle.height = `${barTwoStyle.height}`;
-  //           barTwoStyle.height = `${tmp}`;
-            
-  //           count ++;
-  //         }
-  //         count ++;
-  //       }
-  //         // if ((i - fix) % (arrayL - 1) === 0) {
-  //         //   z = -1;
-  //         //   time--;
-  //         //   fix++;
-  //         // }
-  //         // z++;
-  //         // x++;
-  //       }
-  //     }, y * ANIMATION_SPEED_MS);
-  //   }
-  //   }
-  // }, i * ANIMATION_SPEED_MS);
-      
-  //     // if (i == animations[count]) {
-  //     //   //swap
-  //     //   const tmp = barOneStyle.height;
-  //     //   barOneStyle.height = `${barTwoStyle.height}`;
-  //     //   barTwoStyle.height = `${tmp}`;
-
-  //     //   while(animations[count] > animations[count + 1]){
-  //     //     current--;
-  //     //     //swap
-
-  //     //   }
-  //     //   count ++;
-  //     // }
-  //   }
-
-  // //   var time = this.state.array.length;
-  // //   var arrayL = ((this.state.array.length - 1) * 3);
-  // //   var totalAnimationSteps = arrayL * time;
-    
-  // //   var arrAnimation = [];
-  // //   var num = 0;
-  // //   for (let t = 0; t < arrayL; t++) {
-  // //     var test = t % 3 !== 2;
-  // //     if (test) {
-  // //       arrAnimation.push([num,num+1]);
-  // //     }
-  // //     else{
-  // //       arrAnimation.push([num,num+1]);
-  // //       num++;
-  // //     }
-  // //   }
-  // //    var x = 0;
-  // //    var t = 0;
-  // //    var z = 0;
-  // //    var fix = 0;
-  // //     for (let i = 0; i < totalAnimationSteps; i++) {
-  // //       const arrayBars = document.getElementsByClassName('array-bar');
-  // //       const isColorChange = i % 3 !== 2;
-  // //       if (isColorChange) {
-  // //         setTimeout(() => {
-  // //         const [barOneIdx,barTwoIdx] = arrAnimation[z];
-  // //         const barOneStyle = arrayBars[barOneIdx].style;
-  // //         const barTwoStyle = arrayBars[barTwoIdx].style;
-  // //         const color = (z - x) % 2 !== 0 ? PRIMARY_COLOR : SECONDARY_COLOR;
-  // //           barOneStyle.backgroundColor = color;
-  // //           barTwoStyle.backgroundColor = color;
-  // //           z++;
-  // //         }, i * ANIMATION_SPEED_MS);
-  // //       }
-  // //       else {
-  // //         setTimeout(() => {
-  // //           var ar = arrAnimation[z];
-  // //           if (animations[t] == ar[0]) {
-  // //             t++;
-  // //             const [barOneIdx,barTwoIdx] = arrAnimation[z];
-  // //           const barOneStyle = arrayBars[barOneIdx].style;
-  // //           const barTwoStyle = arrayBars[barTwoIdx].style;
-  // //           const tmp = barOneStyle.height;
-            
-  // //           barOneStyle.height = `${barTwoStyle.height}`;
-  // //           barTwoStyle.height = `${tmp}`;
-  // //           }
-  // //           if ((i - fix) % (arrayL - 1) === 0) {
-  // //             z = -1;
-  // //             time--;
-  // //             fix++;
-  // //           }
-  // //           z++;
-  // //           x++;
-  // //       }, i * ANIMATION_SPEED_MS);
-  // //     }
-  // // }
-  //   console.log(animations);
   }
-  selectionSort(){
-    
-  }
-  quickSort() {
-  }
+  //implement
   heapSort() {
   }
-  
+  selectionSort(){
+  }
+
   render() {
     const {array} = this.state;
 
     return (
       <div className="board-container">
-        <div className="algo-btn">
-        <button className="glow-on-hover sm-btn" onClick={() => this.resetArray()}>Generate New Array</button>
-        <button className="glow-on-hover sm-btn" onClick={() => this.mergeSort()}>Merge Sort</button>
-        <button className="glow-on-hover sm-btn" onClick={() => this.quickSort()}>Quick Sort</button>
-        <button className="glow-on-hover sm-btn" onClick={() => this.heapSort()}>Heap Sort</button>
-        <button className="glow-on-hover sm-btn" onClick={() => this.bubbleSort()}>Bubble Sort</button>
-        <button className="glow-on-hover sm-btn" onClick={() => this.insertionSort()}>Insertion Sort</button>
-        <button className="glow-on-hover sm-btn" onClick={() => this.selectionSort()}>Selection Sort</button>
+        <div id='buttons' className="algo-btn">
+        <button className="glow-on-hover sm-btn " onClick={() => this.resetArray()}>New Array</button>
+        <button className="glow-on-hover sm-btn test" onClick={() => this.bubbleSort()}>Bubble Sort</button>
+        <button className="glow-on-hover sm-btn algo-button" onClick={() => this.insertionSort()}>Insertion Sort</button>
+        <button className="glow-on-hover sm-btn algo-button" onClick={() => this.mergeSort()}>Merge Sort</button>
+        <button className="glow-on-hover sm-btn algo-button" onClick={() => this.quickSort()}>Quick Sort</button>
         </div>
+        <div id="resetBtn"></div>
+        <div className="slider">
+        <input id="changeArrLength" className = "sliderArrayLength"
+           type="range"
+           min={10}
+           max={50}
+           value={this.state.value} 
+           onChange={this.handleChange}
+             />
+              <div>{this.state.value}</div>
+             <input id="changeAnimationSpeed" className="sliderAnimationSpeed"
+           type="range"
+           min={20}
+           max={250}
+           value={this.state.speedValue} 
+           onChange={this.handleSpeedValueChange}
+             />
+            <div>{this.state.speedValue}</div>
+          </div>
         <div className="array-container">
         {array.map((value, idx) => (
           <div

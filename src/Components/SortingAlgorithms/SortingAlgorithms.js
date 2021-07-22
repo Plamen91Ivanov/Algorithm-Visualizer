@@ -21,10 +21,18 @@ export function getSelectionSortAnimation(array,times) {
 }
 
 export function getInsertionSortAnimation(array,times) {
+  const copyArr = [...array];
   const animations = [];
-  var t = insertionSort(array,animations,times);
+  var t = insertionSort(copyArr,animations,times);
   times = t;
   return {animations,times};
+}
+
+export function getQuickSortAnimation(array){
+  const animations = [];
+  quickSortHelper(array, 0, array.length - 1, animations);
+
+  return animations;
 }
 
 function bubleSort(array,animations,times)
@@ -123,17 +131,19 @@ function doMerge(
 }
 
 function insertionSort(array,animations){
-    let x = array;
     let length = array.length;
     for (let i = 1; i < length; i++) {
-      let key = array[i];
+      let currentElement = array[i];
       let j = i - 1;
-      while (j >= 0 && array[j] > key) {
-        array[j + 1] = array[j];
-          animations.push(j);
-          j = j - 1;
+      if (!(j >= 0 && array[j] > currentElement)) {
+         animations.push([[j,j + 1],false])
       }
-      array[j + 1] = key;
+      while (j >= 0 && array[j] > currentElement) {
+        animations.push([[j,j + 1],true])
+        array[j + 1] = array[j];
+        j = j - 1;
+      }
+      array[j + 1] = currentElement;
   }
     return {animations};
 }
@@ -153,4 +163,42 @@ function selectionSort(array, compare, swap) {
     }
   }
   return array;
+}
+
+function quickSortHelper(arr, left, right, animations) {
+  if (right <= left) return;
+  const part = partition(arr, left, right, animations);
+  quickSortHelper(arr, left, part, animations);
+  quickSortHelper(arr, part + 1, right, animations);
+}
+
+function partition(arr, left, right, animations) {
+  let i = left;
+  let j = right + 1;
+
+  const pivot = arr[left];
+
+  while (true) {
+    while (arr[++i] <= pivot) { 
+      if (i === right) break;
+      animations.push([[i,left], false,[left,right]]);
+    }
+    while (arr[--j] >= pivot) {
+      
+      if (j === left) break;
+      animations.push([[j,left], false,[left,right]]);
+    }
+    if (j <= i) break;
+    animations.push([[i, j], true,[left,right]]);
+    swap(arr, i, j);
+  }
+  animations.push([[left, j], true,[left,right]]);
+  swap(arr, left, j);
+  return j;
+}
+
+function swap(arr, index1, index2) {
+  const temp = arr[index1];
+  arr[index1] = arr[index2];
+  arr[index2] = temp;
 }

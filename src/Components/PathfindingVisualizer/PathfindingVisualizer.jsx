@@ -18,6 +18,8 @@ export default class PathfindingVisualizer extends Component {
     this.state = {
       grid: [],
       mouseIsPressed: false,
+      value: 30,
+      speedValue: 110
     };
   }
   
@@ -47,7 +49,7 @@ export default class PathfindingVisualizer extends Component {
           const node = visitedNodes[i];
           document.getElementById(`node-${node.row}-${node.col}`).className =
             'node node-visited';
-        }, 100 * i);
+        }, this.state.speedValue * i);
       }
   }
 
@@ -56,14 +58,14 @@ export default class PathfindingVisualizer extends Component {
       if (i === visitedNodesInOrder.length) {
         setTimeout(() => {
           this.animateShortestPath(nodesInShortestPathOrder);
-        }, 100 * i);
+        }, this.state.speedValue * i);
         return;
       }
       setTimeout(() => {
         const node = visitedNodesInOrder[i];
         document.getElementById(`node-${node.row}-${node.col}`).className =
           'node node-visited';
-      }, 100 * i);
+      }, this.state.speedValue * i);
     }
   }
 
@@ -73,7 +75,7 @@ export default class PathfindingVisualizer extends Component {
         const node = nodesInShortestPathOrder[i];
         document.getElementById(`node-${node.row}-${node.col}`).className =
           'node node-shortest-path';
-      }, 50 * i);
+      }, this.state.speedValue * i);
     }
   }
 
@@ -83,6 +85,7 @@ export default class PathfindingVisualizer extends Component {
     const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
     const visitedNodesInOrder = dijkstra(grid, startNode, finishNode);
     const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
+    this.addResetButton();
     this.animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
   }
 
@@ -91,6 +94,7 @@ export default class PathfindingVisualizer extends Component {
       const startNode = grid[START_NODE_ROW][START_NODE_COL];
       const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
       const visitedNodes = dfs(grid,startNode,finishNode);
+      this.addResetButton();
       this.animateDFS(visitedNodes);
     }
 
@@ -101,8 +105,56 @@ export default class PathfindingVisualizer extends Component {
         const visitedNodes = AStar(grid,startNode,finishNode);
         console.log(visitedNodes);
       }
+  handleChange = (e) =>{
+    this.setState({value: e.target.value})
+  };
+  handleSpeedValueChange = (e) =>{
+    this.setState({speedValue: e.target.value}) 
+    console.log(this.state.speedValue)
+  };
+      
+  disableAllButtons(){
+    document.getElementById('changeArrLength').disabled = true;
+    document.getElementById('changeAnimationSpeed').disabled = true;
+    const buttons = document.getElementsByClassName('sm-btn')
+     for (let index = 0; index < buttons.length; index++) {
+        buttons[index].disabled = true;
+        buttons[index].className = "sm-btn disabled";
+     }
+  }
+  
+  enableAllButtons(){
+    document.getElementById('changeArrLength').disabled = false;
+    document.getElementById('changeAnimationSpeed').disabled = false;
+    const buttons = document.getElementsByClassName('sm-btn')
+    for (let index = 0; index < buttons.length; index++) {
+      buttons[index].disabled = false;
+      buttons[index].className = "glow-on-hover sm-btn";
+    }
+  }
 
-  clearBoard(){
+
+
+      addResetButton(){
+        let btn = document.createElement('button');
+        btn.onclick = () => {
+          this.stop()
+        };
+        btn.className = "sm-btn resetBtn";
+        btn.innerHTML = "RESET"
+        document.getElementById('resetBtn').appendChild(btn);
+      }
+      
+     removeResetButton(){
+      const buttons = document.getElementsByClassName('glow-on-hover');
+     buttons[buttons.length - 1].remove();
+     }
+
+      
+    stop(){
+    window.location.reload();
+    }
+    clearBoard(){
     const newGrid = getNewGrid(this.state.grid);
     console.log(newGrid);
     this.setState({grid: newGrid});
@@ -143,7 +195,26 @@ export default class PathfindingVisualizer extends Component {
          Clear Board
         </button>
       </div>
-
+      <div id="resetBtn"></div>
+      <div className="slider">
+        <input id="changeArrLength" className = "sliderArrayLength"
+           type="range"
+           min={10}
+           max={50}
+           value={this.state.value} 
+           onChange={this.handleChange}
+             />
+              <div>{this.state.value}</div>
+             <input id="changeAnimationSpeed" className="sliderAnimationSpeed"
+           type="range"
+           min={20}
+           max={250}
+           value={this.state.speedValue} 
+           onChange={this.handleSpeedValueChange}
+             />
+            <div>{this.state.speedValue}</div>
+          </div>
+      <div id="resetBtn"></div>
         <div className="grid board">
           {grid.map((row, rowIdx) => {
             return (

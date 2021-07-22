@@ -6,8 +6,29 @@
   height: 80%;
 }
 
+#resetBtn{
+  height: 30px;
+}
+
 .array-bar {
   width: 20px;
   display: inline-block;
   margin: 0 1px;
+  border: 2px solid black;
+  border-radius: 7px;
+}
+
+.slider{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 7vh;
+}
+
+.sliderInput{
+  color:red;
+}
+
+input[type="range"] {
+  width:300px;
 }
