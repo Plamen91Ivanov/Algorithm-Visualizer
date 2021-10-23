@@ -20,12 +20,11 @@ export function getSelectionSortAnimation(array,times) {
   return {animations,times};
 }
 
-export function getInsertionSortAnimation(array,times) {
+export function getInsertionSortAnimation(array) {
   const copyArr = [...array];
-  const animations = [];
-  var t = insertionSort(copyArr,animations,times);
-  times = t;
-  return {animations,times};
+  const animations = []; 
+  insertionSort(copyArr,animations);
+  return animations;
 }
 
 export function getQuickSortAnimation(array){
@@ -54,6 +53,7 @@ function bubleSort(array,animations,times)
     }
     times++;
     elementsNumber--;
+    console.log(elementsNumber)
     if (!isSorted) {
       return times;
     }
@@ -129,13 +129,13 @@ function doMerge(
     mainArray[k++] = auxiliaryArray[j++];
   }
 }
-
+//some bug !!
 function insertionSort(array,animations){
     let length = array.length;
     for (let i = 1; i < length; i++) {
       let currentElement = array[i];
       let j = i - 1;
-      if (!(j >= 0 && array[j] > currentElement)) {
+      if (!(j >= 0 && array[j] < currentElement)) {
          animations.push([[j,j + 1],false])
       }
       while (j >= 0 && array[j] > currentElement) {
@@ -145,6 +145,7 @@ function insertionSort(array,animations){
       }
       array[j + 1] = currentElement;
   }
+  console.log('sorted ',array)
     return {animations};
 }
 

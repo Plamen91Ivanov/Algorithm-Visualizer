@@ -26,7 +26,7 @@ export default class SortingVisualizer extends React.Component {
     this.state = {
       array: [],
       value: 30,
-      speedValue: 125,
+      speedValue: 120,
       stop:false,
       sorted:false
     };
@@ -47,19 +47,22 @@ export default class SortingVisualizer extends React.Component {
   handleSpeedValueChange = (e) =>{
     this.setState({speedValue: e.target.value}) 
   };
-
   resetArray() {
+    //  if (this.state.sorted == true) {
+    //    window.location.reload();
+    //    this.state.sorted = false;
+    //  }
     const array = [];
-    for (let i = 0; i < this.state.value; i++) {
+     for (let i = 0; i < this.state.value; i++) {
       array.push(randomIntFromInterval(5, 40));
     }
     for (let i = 0; i < this.state.array.length; i++) {
       const arrayBars = document.getElementsByClassName('array-bar');
       arrayBars[i].style.backgroundColor = 'turquoise';
- }
+ } 
+ this.enableAllButtons();
  this.setState({array});
   }
-
   disableAllButtons(){
     document.getElementById('changeArrLength').disabled = true;
     document.getElementById('changeAnimationSpeed').disabled = true;
@@ -70,22 +73,24 @@ export default class SortingVisualizer extends React.Component {
      }
   }
   disableAlgorithmButtons(){
-    const algoButtons = document.getElementsByClassName('sm-btn');
-    console.log(algoButtons)
+    const algoButtons = document.getElementsByClassName('algorithm-btn');
     for (let index = 0; index < algoButtons.length; index++) {
         algoButtons[index].disabled = true;
-        algoButtons[index].clasName = 'sm-btn algorithm-button-disabled';
-        console.log('tik');
+        algoButtons[index].className = 'sm-btn algorithm-btn algorithm-button-disabled';
     }
   }
-  
   enableAllButtons(){
     document.getElementById('changeArrLength').disabled = false;
     document.getElementById('changeAnimationSpeed').disabled = false;
     const buttons = document.getElementsByClassName('sm-btn')
     for (let index = 0; index < buttons.length; index++) {
       buttons[index].disabled = false;
-      buttons[index].className = "glow-on-hover sm-btn";
+      if (index > 3) {
+        buttons[index].className = "glow-on-hover sm-btn algorithm-btn";
+      }
+      else{
+        buttons[index].className = "glow-on-hover sm-btn";
+      }
     }
   }
 
@@ -133,6 +138,7 @@ export default class SortingVisualizer extends React.Component {
           if (i == animations.length - 1) {
             this.enableAllButtons();
             this.removeResetButton();
+            this.disableAlgorithmButtons();
           }
         }, i * this.state.speedValue);
       }
@@ -201,6 +207,7 @@ export default class SortingVisualizer extends React.Component {
             if (i == totalAnimationSteps - 1) {
               this.enableAllButtons();
               this.removeResetButton();
+              this.disableAlgorithmButtons();
             }
          }, i * this.state.speedValue);
         }
@@ -209,12 +216,14 @@ export default class SortingVisualizer extends React.Component {
   } 
   insertionSort() {
     let animations = [];
-    const result = getInsertionSortAnimation(this.state.array,times);
-    animations = result.animations; 
+    const result = getInsertionSortAnimation(this.state.array);
+    animations = result; 
     let z = 0;
     let x = 0;
     this.disableAllButtons();
     this.addResetButton();
+    console.log('arrray ',this.state.array)
+    console.log(animations)
     for (let i = 0; i < animations.length; i++) {
       setTimeout(() => {
         const arrayBars = document.getElementsByClassName('array-bar');
@@ -243,9 +252,7 @@ export default class SortingVisualizer extends React.Component {
         if (i == (animations.length - 1) && y == 2) {
           this.enableAllButtons();
           this.removeResetButton();
-          this.state.sorted = true;
           this.disableAlgorithmButtons();
-          console.log("tuk")
           }
             },y * this.state.speedValue);
         }
@@ -293,6 +300,7 @@ export default class SortingVisualizer extends React.Component {
         if (i == test && y == 2) {
           this.enableAllButtons();
           this.removeResetButton();
+          this.disableAlgorithmButtons();
         }
             },y * this.state.speedValue);
         }
@@ -304,7 +312,6 @@ export default class SortingVisualizer extends React.Component {
   }
   selectionSort(){
   }
-
   render() {
     const {array} = this.state;
 
@@ -312,10 +319,10 @@ export default class SortingVisualizer extends React.Component {
       <div className="board-container">
         <div id='buttons' className="algo-btn">
         <button className="glow-on-hover sm-btn " onClick={() => this.resetArray()}>New Array</button>
-        <button className="glow-on-hover sm-btn test" onClick={() => this.bubbleSort()}>Bubble Sort</button>
-        <button className="glow-on-hover sm-btn algo-button" onClick={() => this.insertionSort()}>Insertion Sort</button>
-        <button className="glow-on-hover sm-btn algo-button" onClick={() => this.mergeSort()}>Merge Sort</button>
-        <button className="glow-on-hover sm-btn algo-button" onClick={() => this.quickSort()}>Quick Sort</button>
+        <button className="glow-on-hover sm-btn algorithm-btn" onClick={() => this.bubbleSort()}>Bubble Sort</button>
+        <button className="glow-on-hover sm-btn algorithm-btn" onClick={() => this.insertionSort()}>Insertion Sort</button>
+        <button className="glow-on-hover sm-btn algorithm-btn" onClick={() => this.mergeSort()}>Merge Sort</button>
+        <button className="glow-on-hover sm-btn algorithm-btn" onClick={() => this.quickSort()}>Quick Sort</button>
         </div>
         <div id="resetBtn"></div>
         <div className="slider">
@@ -329,7 +336,7 @@ export default class SortingVisualizer extends React.Component {
               <div>{this.state.value}</div>
              <input id="changeAnimationSpeed" className="sliderAnimationSpeed"
            type="range"
-           min={20}
+           min={10}
            max={250}
            value={this.state.speedValue} 
            onChange={this.handleSpeedValueChange}
@@ -344,7 +351,7 @@ export default class SortingVisualizer extends React.Component {
             style={{
               backgroundColor: PRIMARY_COLOR,
               height: `${13*value}px`,
-            }}></div>
+            }}>{value}</div>
         ))}
         </div>
       </div>
